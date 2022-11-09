@@ -1,6 +1,7 @@
 # User Defined
 *.csv
 *.xlsx
+*.tsv
 
 
 # Byte-compiled / optimized / DLL files
