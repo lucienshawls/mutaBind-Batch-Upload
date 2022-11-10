@@ -37,12 +37,12 @@ def init():
         'window-size=1920x1080'
     ]
     myoption = []
-    option = webdriver.EdgeOptions()
+    option = webdriver.ChromeOptions()
     for i in myoption:
         option.add_argument(i)
     # option.add_experimental_option('detach',True) # 程序结束后保留浏览器窗口
     option.add_experimental_option('excludeSwitches',['enable-logging']) # 关闭selenium控制台提示
-    driver = webdriver.Edge(options=option)
+    driver = webdriver.Chrome(options=option)
     driver.implicitly_wait(20)
     driver.maximize_window() # 最大化
     return driver
