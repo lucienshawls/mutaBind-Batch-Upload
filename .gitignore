@@ -2,7 +2,7 @@
 *.csv
 *.xlsx
 *.tsv
-
+!input.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
