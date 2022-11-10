@@ -140,7 +140,7 @@ def batch_submit(folder):
             res = row + [url]
             results.append(res)
 
-            with open('%s/results.csv' %(folder),'w',encoding='utf-8-sig',newline='') as g:
+            with open('%s/results.csv' %(folder),'a',encoding='utf-8-sig',newline='') as g:
                 writer = csv.writer(g)
                 writer.writerow(res)
 
