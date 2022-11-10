@@ -18,7 +18,7 @@ jobs:
     - name: Auto submit
       run: |
         python ./main.py
-    - name: Upload results file
+    - name: Upload results file 多突
       uses: actions/upload-artifact@v3
       with:
         name: repo
