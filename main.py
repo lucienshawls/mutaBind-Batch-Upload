@@ -36,7 +36,7 @@ def init():
         '--headless',
         'window-size=1920x1080'
     ]
-    myoption = []
+    # myoption = []
     option = webdriver.ChromeOptions()
     for i in myoption:
         option.add_argument(i)
