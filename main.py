@@ -32,15 +32,15 @@ def generate_mutations_file(mydata):
 
 
 def init():
-    # myoption = [
-    #     '--headless',
-    #     'window-size=1920x1080'
-    # ]
-    myoption = []
+    myoption = [
+        '--headless',
+        'window-size=1920x1080'
+    ]
+    # myoption = []
     option = webdriver.EdgeOptions()
     for i in myoption:
         option.add_argument(i)
-    option.add_experimental_option('detach',True) # 程序结束后保留浏览器窗口
+    # option.add_experimental_option('detach',True) # 程序结束后保留浏览器窗口
     option.add_experimental_option('excludeSwitches',['enable-logging']) # 关闭selenium控制台提示
     driver = webdriver.Edge(options=option)
     driver.implicitly_wait(20)
@@ -48,13 +48,17 @@ def init():
     return driver
 
 def upload(driver,mydata):
+    print('\t\t访问初始页面')
     driver.get('https://lilab.jysw.suda.edu.cn/research/mutabind2/research/mutabind2/')
+    
+    print('\t\t提交蛋白')
     myenter(driver,By.ID,'pdb_id_input',mydata['pdb'])
     if mydata['is_single']:
         myclick(driver,By.ID,'single')
     else:
         myclick(driver,By.ID,'multiple')
     
+    print('\t\t设定partner')
     index = 1
     p1 = 0
     p2 = 0
@@ -77,6 +81,7 @@ def upload(driver,mydata):
             break
     myclick(driver,By.ID,'submit_partners')
     
+    print('\t\t设置mutation')
     file_name = generate_mutations_file(mydata)
     if mydata['is_single']:
         myclick(driver,By.XPATH,'//*[@id="myTab"]/li[2]/a')
@@ -90,7 +95,7 @@ def upload(driver,mydata):
         myclick(driver,By.ID,'submit_partners')
     return driver.current_url
 
-def main():
+def single_submit():
     mydata = {
         'pdb': '1A22',
         'partner1': 'A',
@@ -101,6 +106,47 @@ def main():
     driver = init()
     url = upload(driver=driver,mydata=mydata)
     print(url)
+
+def batch_submit(folder):
+    data_set = []
+    driver = init()
+    results = []
+    with open('%s/input.csv' %(folder),'r',encoding='utf-8-sig') as f:
+        reader = csv.reader(f)
+        table = list(reader)
+        res = table[0] + ['res_url']
+        results.append(res)
+        with open('%s/results.csv' %(folder),'w',encoding='utf-8-sig',newline='') as g:
+            writer = csv.writer(g)
+            writer.writerow(res)
+        cur = 0
+        tot = len(table[1:])
+        for row in table[1:]:
+            cur += 1
+            data = {
+                'pdb': row[0],
+                'partner1': row[1],
+                'partner2': row[2],
+                'is_single': len(row[3].split(';')) == 1,
+                'mutations': row[3].split(';')
+            }
+            data_set.append(data)
+            print('Processing: %d/%d\n\t%s:%s' %(cur,tot,data['pdb'],str(data['mutations'])))
+            try:
+                url = upload(driver=driver,mydata=data)
+            except:
+                url = 'Error'
+            print('\turl:%s' %(url))
+            res = row + [url]
+            results.append(res)
+
+            with open('%s/results.csv' %(folder),'w',encoding='utf-8-sig',newline='') as g:
+                writer = csv.writer(g)
+                writer.writerow(res)
+
+def main():
+    # single_submit()
+    batch_submit('单突')
 
 if __name__ == '__main__':
     main()
